@@ -7,7 +7,6 @@ import { Input } from "./ui/input"
 interface Gift {
   id: number
   name: string
-  points: number
   image: string
   description: string
 }
@@ -35,35 +34,30 @@ export default function RewardsShop() {
     {
       id: 1,
       name: "ספר צבעוני",
-      points: 50,
       image: "📚",
       description: "ספר מרתק ומעניין"
     },
     {
       id: 2,
       name: "משחק קופסה",
-      points: 100,
       image: "🎲",
       description: "משחק משפחתי מהנה"
     },
     {
       id: 3,
       name: "אוזניות",
-      points: 150,
       image: "🎧",
       description: "אוזניות איכותיות"
     },
     {
       id: 4,
       name: "תיק גב",
-      points: 200,
       image: "🎒",
       description: "תיק גב מעוצב ונוח"
     },
     {
       id: 5,
       name: "כדור כדורגל",
-      points: 80,
       image: "⚽",
       description: "כדור כדורגל מקצועי"
     }
@@ -97,7 +91,6 @@ export default function RewardsShop() {
     setCart(prevCart => prevCart.filter(item => item.id !== id))
   }
 
-  const totalPoints = cart.reduce((sum, item) => sum + item.points * item.quantity, 0)
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   const handleCheckout = () => {
@@ -108,39 +101,88 @@ export default function RewardsShop() {
     setIsCheckoutOpen(true)
   }
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
-    e.preventDefault()
+//   const handleSubmitOrder = (e: React.FormEvent) => {
+//     e.preventDefault()
     
-    if (!fullName || !className) {
-      alert("נא למלא את כל השדות")
-      return
-    }
+//     if (!fullName || !className) {
+//       alert("נא למלא את כל השדות")
+//       return
+//     }
 
-    const order = {
-      שם_מלא: fullName,
-      כיתה: className,
-      מתנה: cart[0].name,
-      נקודות: cart[0].points,
-      תאריך: new Date().toLocaleString('he-IL')
-    }
+//     const order = {
+//       שם_מלא: fullName,
+//       כיתה: className,
+//       מתנה: cart[0].name,
+//       תאריך: new Date().toLocaleString('he-IL')
+//     }
 
-    console.log("הזמנה חדשה:", order)
+//     console.log("הזמנה חדשה:", order)
     
-    setCompletedOrder(order)
-    setIsCheckoutOpen(false)
-    setIsSuccessOpen(true)
+//     setCompletedOrder(order)
+//     setIsCheckoutOpen(false)
+//     setIsSuccessOpen(true)
     
-    setTimeout(() => {
-      setFullName("")
-      setClassName("")
-      setCart([])
-    }, 500)
-  }
+//     setTimeout(() => {
+//       setFullName("")
+//       setClassName("")
+//       setCart([])
+//     }, 500)
+//   }
 
   const closeSuccessModal = () => {
     setIsSuccessOpen(false)
     setCompletedOrder(null)
   }
+const handleSubmitOrder = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!fullName || !className) {
+    alert("נא למלא את כל השדות");
+    return;
+  }
+
+  if (cart.length === 0) {
+    alert("עגלה ריקה");
+    return;
+  }
+
+  const order = {
+    "שם_מלא": fullName,
+    "כיתה": className,
+    "מתנה": cart[0].name,
+    "תאריך": new Date().toLocaleString('he-IL')
+  };
+
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzCu8T9fOrJtCsn13p6Xz9axPIubFtNqaN6us24wpX7yU8VnoyzeiiQkblNNNIjfbo_/exec"
+, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order)
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("Apps Script response not ok:", text);
+      alert("שגיאה בשליחת הנתונים לגיליון.");
+      return;
+    }
+
+    // הצלחה — עדכני את הממשק
+    setCompletedOrder(order);
+    setIsCheckoutOpen(false);
+    setIsSuccessOpen(true);
+
+    // נקה שדות והעגלה
+    setFullName("");
+    setClassName("");
+    setCart([]);
+
+  } catch (err) {
+    console.error("שגיאה בחיבור ל-Apps Script:", err);
+    alert("שגיאה בחיבור — בדקי חיבור אינטרנט או URL של ה-Web App.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-charcoal relative overflow-hidden" dir="rtl">
@@ -192,11 +234,6 @@ export default function RewardsShop() {
                 <p className="text-teal/80 text-center mb-3 sm:mb-4 text-sm font-heebo">
                   {gift.description}
                 </p>
-
-                <div className="bg-gradient-to-r from-crimson to-crimson/80 text-white text-center py-2 rounded-lg mb-3 sm:mb-4 font-bold text-base sm:text-lg">
-                  {gift.points} נקודות
-                </div>
-
                 <Button
                   onClick={() => addToCart(gift)}
                   className="w-full bg-gradient-to-r from-gold to-gold/90 hover:from-gold/90 hover:to-gold text-charcoal font-bold border-2 border-teal/50 shadow-lg hover:shadow-teal/50 transition-all duration-300 text-sm sm:text-base"
@@ -233,7 +270,6 @@ export default function RewardsShop() {
                         <span className="text-3xl">{item.image}</span>
                         <div>
                           <h4 className="text-white font-bold font-rubik">{item.name}</h4>
-                          <p className="text-gold text-sm">{item.points} נקודות</p>
                         </div>
                       </div>
                       <button
@@ -247,12 +283,7 @@ export default function RewardsShop() {
                 ))}
               </div>
 
-              <div className="border-t-2 border-gold/30 pt-4 mb-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-white text-xl font-bold font-heebo">סה"כ נקודות:</span>
-                  <span className="text-gold font-black text-2xl">{totalPoints}</span>
-                </div>
-              </div>
+              
 
               <Button 
                 onClick={handleCheckout}
@@ -312,7 +343,6 @@ export default function RewardsShop() {
                             <span className="text-3xl">{item.image}</span>
                             <div>
                               <h4 className="text-white font-bold font-rubik">{item.name}</h4>
-                              <p className="text-gold text-sm">{item.points} נקודות</p>
                             </div>
                           </div>
                           <button
@@ -325,14 +355,6 @@ export default function RewardsShop() {
                       </div>
                     ))}
                   </div>
-
-                  <div className="border-t-2 border-gold/30 pt-4 mb-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-white text-xl font-bold font-heebo">סה"כ נקודות:</span>
-                      <span className="text-gold font-black text-2xl">{totalPoints}</span>
-                    </div>
-                  </div>
-
                   <Button 
                     onClick={handleCheckout}
                     className="w-full h-14 bg-gradient-to-r from-crimson to-crimson/90 hover:from-crimson/90 hover:to-crimson text-white font-bold text-lg border-2 border-gold/50 shadow-xl hover:shadow-gold/50 transition-all duration-300"
@@ -366,7 +388,6 @@ export default function RewardsShop() {
                   <span className="text-4xl">{cart[0]?.image}</span>
                   <div>
                     <p className="text-white font-bold text-lg font-rubik">{cart[0]?.name}</p>
-                    <p className="text-gold font-semibold">{cart[0]?.points} נקודות</p>
                   </div>
                 </div>
 
@@ -375,7 +396,6 @@ export default function RewardsShop() {
                   <span className="text-4xl">{pendingGift.image}</span>
                   <div>
                     <p className="text-white font-bold text-lg font-rubik">{pendingGift.name}</p>
-                    <p className="text-teal font-semibold">{pendingGift.points} נקודות</p>
                   </div>
                 </div>
               </div>
@@ -441,7 +461,6 @@ export default function RewardsShop() {
                     <span className="text-4xl">{cart[0]?.image}</span>
                     <div>
                       <p className="text-white font-bold text-lg font-rubik">{cart[0]?.name}</p>
-                      <p className="text-gold font-semibold">{cart[0]?.points} נקודות</p>
                     </div>
                   </div>
                 </div>
@@ -498,7 +517,6 @@ export default function RewardsShop() {
                     <span className="text-5xl">{cart[0]?.image}</span>
                     <div>
                       <p className="text-white font-bold text-xl font-rubik">{completedOrder.מתנה}</p>
-                      <p className="text-gold font-bold text-lg">{completedOrder.נקודות} נקודות</p>
                     </div>
                   </div>
                 </div>
