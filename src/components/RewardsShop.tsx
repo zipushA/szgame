@@ -154,17 +154,11 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
   };
 
   try {
-    const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbzCu8T9fOrJtCsn13p6Xz9axPIubFtNqaN6us24wpX7yU8VnoyzeiiQkblNNNIjfbo_/exec",
-      {
-        method: "POST",
-        mode: "no-cors", // 👈 זה העיקר - מונע חסימת CORS
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(order),
-      }
-    );
+   const response = await fetch("https://script.google.com/macros/s/AKfycbw8ysqqPhw3vtmmbMOG6eX7-mayI2EPgRuvy5OtFTK-YuuwK2bLtrOJnTwQYAYpnYRv/exec", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(order),
+});
 
     // במצב no-cors אי אפשר לקרוא את ה-response, אז פשוט נניח הצלחה
     console.log("ההזמנה נשלחה בהצלחה ל-Google Sheets ✅", order);
