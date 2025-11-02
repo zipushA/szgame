@@ -466,7 +466,7 @@ export default function RewardsShop() {
               <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 border-2 border-gold/30 mb-6 space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-white/20">
                   <span className="text-white/70 font-heebo">שם:</span>
-                  <span className="text-white font-bold text-lg font-rubik">{completedOrder.שם_מלא}</span>
+                  <span className="text-white font-bold text-lg font-rubik">{completedOrder["שם מלא"]}</span>
                 </div>
 
                 <div className="flex items-center justify-between pb-3 border-b border-white/20">
