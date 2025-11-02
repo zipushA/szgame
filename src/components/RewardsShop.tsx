@@ -1,4 +1,7 @@
 
+"use client"
+
+import type React from "react"
 
 import { useState } from "react"
 import { Button } from "./ui/button"
@@ -15,16 +18,19 @@ interface CartItem extends Gift {
   quantity: number
 }
 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaSVuBk0k-cwu_m0iuqFVGAziSU0ErQ5QIOe68eUkCRwh_4SCBV36Dih6v-oGo6j33/exec"
+
 export default function RewardsShop() {
   const [userName, setUserName] = useState<string>(() => {
-    return localStorage.getItem('userName') || 'אורח';
-  });
-  
+    return localStorage.getItem("userName") || "אורח"
+  })
+
   const [cart, setCart] = useState<CartItem[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
   const [isSuccessOpen, setIsSuccessOpen] = useState(false)
   const [isWarningOpen, setIsWarningOpen] = useState(false)
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
   const [pendingGift, setPendingGift] = useState<Gift | null>(null)
   const [fullName, setFullName] = useState("")
   const [className, setClassName] = useState("")
@@ -35,42 +41,40 @@ export default function RewardsShop() {
       id: 1,
       name: "ספר צבעוני",
       image: "📚",
-      description: "ספר מרתק ומעניין"
+      description: "ספר מרתק ומעניין",
     },
     {
       id: 2,
       name: "משחק קופסה",
       image: "🎲",
-      description: "משחק משפחתי מהנה"
+      description: "משחק משפחתי מהנה",
     },
     {
       id: 3,
       name: "אוזניות",
       image: "🎧",
-      description: "אוזניות איכותיות"
+      description: "אוזניות איכותיות",
     },
     {
       id: 4,
       name: "תיק גב",
       image: "🎒",
-      description: "תיק גב מעוצב ונוח"
+      description: "תיק גב מעוצב ונוח",
     },
     {
       id: 5,
       name: "כדור כדורגל",
       image: "⚽",
-      description: "כדור כדורגל מקצועי"
-    }
+      description: "כדור כדורגל מקצועי",
+    },
   ]
 
   const addToCart = (gift: Gift) => {
-    // בדיקה אם כבר יש מתנה בעגלה
     if (cart.length > 0) {
       setPendingGift(gift)
       setIsWarningOpen(true)
       return
     }
-
     setCart([{ ...gift, quantity: 1 }])
   }
 
@@ -88,7 +92,7 @@ export default function RewardsShop() {
   }
 
   const removeFromCart = (id: number) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== id))
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id))
   }
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
@@ -101,82 +105,64 @@ export default function RewardsShop() {
     setIsCheckoutOpen(true)
   }
 
-//   const handleSubmitOrder = (e: React.FormEvent) => {
-//     e.preventDefault()
-    
-//     if (!fullName || !className) {
-//       alert("נא למלא את כל השדות")
-//       return
-//     }
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-//     const order = {
-//       שם_מלא: fullName,
-//       כיתה: className,
-//       מתנה: cart[0].name,
-//       תאריך: new Date().toLocaleString('he-IL')
-//     }
+    if (!fullName || !className) {
+      alert("נא למלא את כל השדות")
+      return
+    }
 
-//     console.log("הזמנה חדשה:", order)
-    
-//     setCompletedOrder(order)
-//     setIsCheckoutOpen(false)
-//     setIsSuccessOpen(true)
-    
-//     setTimeout(() => {
-//       setFullName("")
-//       setClassName("")
-//       setCart([])
-//     }, 500)
-//   }
+    if (cart.length === 0) {
+      alert("עגלה ריקה")
+      return
+    }
+
+   const order = {
+  "שם מלא": fullName,
+  "כיתה": className,
+  "מתנה": cart[0].name,
+  "תאריך": new Date().toLocaleString("he-IL"),
+}
+
+
+    setIsLoadingSubmit(true)
+
+    try {
+      console.log("[v0] שולח הזמנה:", order)
+
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+        mode: "no-cors", // נדרש בגלל CORS של Google
+      })
+
+      console.log("[v0] ההזמנה נשלחה בהצלחה")
+
+      setCompletedOrder(order)
+      setIsCheckoutOpen(false)
+      setIsSuccessOpen(true)
+
+      setTimeout(() => {
+        setFullName("")
+        setClassName("")
+        setCart([])
+      }, 500)
+    } catch (err) {
+      console.error("[v0] שגיאה בשליחת ההזמנה:", err)
+      alert("שגיאה בשליחת ההזמנה. אנא בדוק את החיבור לאינטרנט ונסה שוב.")
+    } finally {
+      setIsLoadingSubmit(false)
+    }
+  }
 
   const closeSuccessModal = () => {
     setIsSuccessOpen(false)
     setCompletedOrder(null)
   }
-const handleSubmitOrder = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!fullName || !className) {
-    alert("נא למלא את כל השדות");
-    return;
-  }
-
-  if (cart.length === 0) {
-    alert("עגלה ריקה");
-    return;
-  }
-
-  const order = {
-    "שם_מלא": fullName,
-    "כיתה": className,
-    "מתנה": cart[0].name,
-    "תאריך": new Date().toLocaleString("he-IL"),
-  };
-
-  try {
-   const response = await fetch("https://script.google.com/macros/s/AKfycbw8ysqqPhw3vtmmbMOG6eX7-mayI2EPgRuvy5OtFTK-YuuwK2bLtrOJnTwQYAYpnYRv/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(order),
-});
-
-    // במצב no-cors אי אפשר לקרוא את ה-response, אז פשוט נניח הצלחה
-    console.log("ההזמנה נשלחה בהצלחה ל-Google Sheets ✅", order);
-
-    setCompletedOrder(order);
-    setIsCheckoutOpen(false);
-    setIsSuccessOpen(true);
-
-    // נקה את השדות והעגלה
-    setFullName("");
-    setClassName("");
-    setCart([]);
-  } catch (err) {
-    console.error("❌ שגיאה בחיבור ל-Apps Script:", err);
-    alert("שגיאה בחיבור — בדקי את החיבור לאינטרנט או את כתובת ה-URL של ה-Web App.");
-  }
-};
-
 
   return (
     <div className="min-h-screen bg-charcoal relative overflow-hidden" dir="rtl">
@@ -222,12 +208,9 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                   {gift.image}
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-bold text-white text-center mb-2 font-rubik">
-                  {gift.name}
-                </h3>
-                <p className="text-teal/80 text-center mb-3 sm:mb-4 text-sm font-heebo">
-                  {gift.description}
-                </p>
+                <h3 className="text-xl sm:text-2xl font-bold text-white text-center mb-2 font-rubik">{gift.name}</h3>
+                <p className="text-teal/80 text-center mb-3 sm:mb-4 text-sm font-heebo">{gift.description}</p>
+
                 <Button
                   onClick={() => addToCart(gift)}
                   className="w-full bg-gradient-to-r from-gold to-gold/90 hover:from-gold/90 hover:to-gold text-charcoal font-bold border-2 border-teal/50 shadow-lg hover:shadow-teal/50 transition-all duration-300 text-sm sm:text-base"
@@ -255,11 +238,8 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
             <>
               <div className="space-y-4 mb-6">
                 {cart.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-charcoal/50 rounded-xl p-4 border border-white/10"
-                  >
-                    <div className="flex items-start justify-between mb-3">
+                  <div key={item.id} className="bg-charcoal/50 rounded-xl p-4 border border-white/10">
+                    <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-3xl">{item.image}</span>
                         <div>
@@ -277,9 +257,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                 ))}
               </div>
 
-              
-
-              <Button 
+              <Button
                 onClick={handleCheckout}
                 className="w-full h-12 bg-gradient-to-r from-crimson to-crimson/90 hover:from-crimson/90 hover:to-crimson text-white font-bold text-lg border-2 border-gold/50 shadow-xl hover:shadow-gold/50 transition-all duration-300 hover:scale-105 animate-pulse-slow"
               >
@@ -311,10 +289,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                   <span className="text-3xl">🛒</span>
                   <h2 className="text-2xl font-black text-white font-rubik">העגלה שלי</h2>
                 </div>
-                <button
-                  onClick={() => setIsCartOpen(false)}
-                  className="text-white text-3xl"
-                >
+                <button onClick={() => setIsCartOpen(false)} className="text-white text-3xl">
                   ✕
                 </button>
               </div>
@@ -328,10 +303,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                 <>
                   <div className="space-y-4 mb-6">
                     {cart.map((item) => (
-                      <div
-                        key={item.id}
-                        className="bg-white/10 rounded-xl p-4 border border-white/10"
-                      >
+                      <div key={item.id} className="bg-white/10 rounded-xl p-4 border border-white/10">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-3">
                             <span className="text-3xl">{item.image}</span>
@@ -349,7 +321,8 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                       </div>
                     ))}
                   </div>
-                  <Button 
+
+                  <Button
                     onClick={handleCheckout}
                     className="w-full h-14 bg-gradient-to-r from-crimson to-crimson/90 hover:from-crimson/90 hover:to-crimson text-white font-bold text-lg border-2 border-gold/50 shadow-xl hover:shadow-gold/50 transition-all duration-300"
                   >
@@ -367,9 +340,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
             <div className="bg-charcoal border-2 border-crimson/50 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-fade-in-up shadow-2xl shadow-crimson/20">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4 animate-bounce">⚠️</div>
-                <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 font-rubik">
-                  רגע!
-                </h2>
+                <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 font-rubik">רגע!</h2>
                 <div className="h-1 w-32 mx-auto bg-gradient-to-r from-crimson via-gold to-teal animate-shimmer mb-4" />
                 <p className="text-white/90 text-lg font-heebo leading-relaxed">
                   כל תלמיד זכאי לבחור <span className="text-gold font-bold">מתנה אחת בלבד</span>
@@ -418,9 +389,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
             <div className="bg-charcoal border-2 border-gold/50 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-fade-in-up shadow-2xl shadow-gold/20">
               <div className="text-center mb-6">
                 <div className="text-6xl mb-4">🎁</div>
-                <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 font-rubik">
-                  השלמת רכישה
-                </h2>
+                <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 font-rubik">השלמת רכישה</h2>
                 <div className="h-1 w-32 mx-auto bg-gradient-to-r from-crimson via-gold to-teal animate-shimmer" />
               </div>
 
@@ -434,6 +403,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                     placeholder="הכניסו את שמכם המלא"
                     className="h-12 text-base bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder:text-white/60 focus:border-gold focus:ring-2 focus:ring-gold/50 transition-all duration-300"
                     required
+                    disabled={isLoadingSubmit}
                   />
                 </div>
 
@@ -446,6 +416,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                     placeholder="לדוגמה: י'1"
                     className="h-12 text-base bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder:text-white/60 focus:border-teal focus:ring-2 focus:ring-teal/50 transition-all duration-300"
                     required
+                    disabled={isLoadingSubmit}
                   />
                 </div>
 
@@ -464,14 +435,16 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                     type="button"
                     onClick={() => setIsCheckoutOpen(false)}
                     className="flex-1 h-12 bg-white/10 hover:bg-white/20 text-white border-2 border-white/20 font-bold transition-all duration-300"
+                    disabled={isLoadingSubmit}
                   >
                     ביטול
                   </Button>
                   <Button
                     type="submit"
                     className="flex-1 h-12 bg-gradient-to-r from-crimson to-crimson/90 hover:from-crimson/90 hover:to-crimson text-white font-bold border-2 border-gold/50 shadow-xl hover:shadow-gold/50 transition-all duration-300 hover:scale-105"
+                    disabled={isLoadingSubmit}
                   >
-                    אישור הזמנה
+                    {isLoadingSubmit ? "שולח..." : "אישור הזמנה"}
                   </Button>
                 </div>
               </form>
@@ -485,13 +458,9 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
             <div className="bg-charcoal border-2 border-gold/50 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-fade-in-up shadow-2xl shadow-gold/30">
               <div className="text-center mb-6">
                 <div className="text-7xl mb-4 animate-bounce">🎉</div>
-                <h2 className="text-4xl sm:text-5xl font-black text-white mb-3 font-rubik">
-                  מזל טוב!
-                </h2>
+                <h2 className="text-4xl sm:text-5xl font-black text-white mb-3 font-rubik">מזל טוב!</h2>
                 <div className="h-2 w-40 mx-auto bg-gradient-to-r from-crimson via-gold to-teal animate-shimmer mb-4" />
-                <p className="text-teal text-xl font-bold font-heebo">
-                  ההזמנה בוצעה בהצלחה
-                </p>
+                <p className="text-teal text-xl font-bold font-heebo">ההזמנה בוצעה בהצלחה</p>
               </div>
 
               <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-6 border-2 border-gold/30 mb-6 space-y-4">
@@ -499,7 +468,7 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                   <span className="text-white/70 font-heebo">שם:</span>
                   <span className="text-white font-bold text-lg font-rubik">{completedOrder.שם_מלא}</span>
                 </div>
-                
+
                 <div className="flex items-center justify-between pb-3 border-b border-white/20">
                   <span className="text-white/70 font-heebo">כיתה:</span>
                   <span className="text-white font-bold text-lg">{completedOrder.כיתה}</span>
@@ -508,7 +477,17 @@ const handleSubmitOrder = async (e: React.FormEvent) => {
                 <div className="pt-2">
                   <p className="text-white/70 text-sm mb-3 font-heebo">המתנה שלך:</p>
                   <div className="flex items-center gap-4 bg-white/10 rounded-xl p-4 border border-gold/30">
-                    <span className="text-5xl">{cart[0]?.image}</span>
+                    <span className="text-5xl">
+                      {cart[0]?.image || completedOrder.מתנה === "ספר צבעוני"
+                        ? "📚"
+                        : completedOrder.מתנה === "משחק קופסה"
+                          ? "🎲"
+                          : completedOrder.מתנה === "אוזניות"
+                            ? "🎧"
+                            : completedOrder.מתנה === "תיק גב"
+                              ? "🎒"
+                              : "⚽"}
+                    </span>
                     <div>
                       <p className="text-white font-bold text-xl font-rubik">{completedOrder.מתנה}</p>
                     </div>
