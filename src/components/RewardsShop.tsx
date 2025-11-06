@@ -18,7 +18,7 @@ interface CartItem extends Gift {
   quantity: number
 }
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzaSVuBk0k-cwu_m0iuqFVGAziSU0ErQ5QIOe68eUkCRwh_4SCBV36Dih6v-oGo6j33/exec"
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmfo6-jUVFdI-VhYoV5J8QyNl7bRpIAxSGYyf8ONa4bB55qD9kOmkUmrh7i_cTVCSn/exec"
 
 export default function RewardsShop() {
   const [userName, setUserName] = useState<string>(() => {
