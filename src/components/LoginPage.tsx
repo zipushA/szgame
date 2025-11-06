@@ -15,10 +15,15 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [password, setPassword] = useState("")
 
   const handleLogin = () => {
-    localStorage.setItem('userName', name);
-    localStorage.setItem('userPassword', password);
-    onLogin(name, password)
-  }
+    if (password.length !== 6) {
+      alert("נא להכניס קוד בן 6 ספרות בדיוק.");
+      return;
+    }
+
+    localStorage.setItem("userName", name);
+    localStorage.setItem("userPassword", password);
+    onLogin(name, password);
+  };
 
   return (
     <div
@@ -62,39 +67,43 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             </svg>
           </div>
 
-          {/* Right logo - School logo placeholder */}
-          <div className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-crimson/30 shadow-2xl animate-float delay-300 flex-shrink-0">
-            <div className="text-center">
-              <div className="text-xl sm:text-3xl md:text-4xl font-bold text-white mb-0.5 sm:mb-1">שער</div>
-              <div className="text-sm sm:text-xl md:text-2xl font-bold text-gold">ציון</div>
-            </div>
+          {/* Right logo - School logo image */}
+          <div className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-crimson/30 shadow-2xl animate-float delay-300 flex-shrink-0 overflow-hidden">
+            <img
+              src="/images/logo.png"
+              alt="לוגו בית הספר"
+              className="w-full h-full object-contain p-2"
+            />
           </div>
+
         </div>
 
         {/* Hero text with crazy animations */}
         <div className="text-center mb-10 sm:mb-16 relative px-2">
           <div className="relative inline-block">
-            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-4 animate-title-wave leading-tight">
-              <span className="inline-block animate-bounce-letter delay-0">ג</span>
-              <span className="inline-block animate-bounce-letter delay-100">ש</span>
-              <span className="inline-block animate-bounce-letter delay-200">ר</span>
-              <span className="inline-block animate-bounce-letter delay-300">י</span>
-              <span className="inline-block animate-bounce-letter delay-400">ם</span>
-              <span className="inline-block mx-2 sm:mx-4 animate-pulse text-gold">✦</span>
-              <span className="inline-block animate-bounce-letter delay-500">ל</span>
-              <span className="inline-block animate-bounce-letter delay-600">ה</span>
-              <span className="inline-block animate-bounce-letter delay-700">צ</span>
-              <span className="inline-block animate-bounce-letter delay-800">ל</span>
-              <span className="inline-block animate-bounce-letter delay-900">ח</span>
-              <span className="inline-block animate-bounce-letter delay-1000">ה</span>
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-white font-semibold mb-4 animate-title-wave tracking-wider">
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ג</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ש</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ר</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1 text-gold">✦</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ש</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ל</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1 text-gold">✦</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ה</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">צ</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ל</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ח</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ו</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ת</span>
+
             </h1>
 
-            {/* Animated underline */}
+            {/* קו אנימציה מתחת לכותרת */}
             <div className="absolute -bottom-1 sm:-bottom-2 left-0 right-0 h-1 sm:h-2 bg-gradient-to-r from-crimson via-gold to-teal animate-shimmer" />
-          </div>
 
+          </div>
           <p className="text-base sm:text-xl md:text-2xl text-teal font-semibold mt-6 sm:mt-8 animate-fade-in-up">
-           חוויה לימודית מעצימה 
+            חוויה לימודית מעצימה
           </p>
         </div>
 
@@ -103,7 +112,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           <div className="relative group">
             <Input
               type="text"
-              placeholder="-השם שלך"
+              placeholder="השם שלך"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="h-12 sm:h-14 text-base sm:text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder:text-white/60 focus:border-gold focus:ring-2 focus:ring-gold/50 transition-all duration-300 group-hover:border-teal/50"
@@ -113,12 +122,19 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
           <div className="relative group">
             <Input
-              type="password"
-              placeholder="הכנס את הקוד שיצא לך!"
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              pattern="\d{6}"
+              placeholder="הכנס  את הקוד שקיבלת - 6 ספרות"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-12 sm:h-14 text-base sm:text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder:text-white/60 focus:border-crimson focus:ring-2 focus:ring-crimson/50 transition-all duration-300 group-hover:border-teal/50"
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ""); // מסיר תווים שאינם מספרים
+                setPassword(value);
+              }}
+              className="h-12 sm:h-14 text-base sm:text-lg bg-white/10 backdrop-blur-md border-2 border-white/20 text-white placeholder:text-white/60 focus:border-crimson focus:ring-2 focus:ring-crimson/50 transition-all duration-300 group-hover:border-teal/50 text-center tracking-widest"
             />
+
             <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-crimson/20 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
           </div>
 
@@ -126,7 +142,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             onClick={handleLogin}
             className="w-full h-12 sm:h-14 text-lg sm:text-xl font-bold bg-gradient-to-r from-crimson to-crimson/90 hover:from-crimson/90 hover:to-crimson text-white border-2 border-gold/50 shadow-2xl hover:shadow-gold/50 transition-all duration-300 hover:scale-105 animate-pulse-slow active:scale-95"
           >
-             לקניית פרסים🎁
+            לקניית פרסים🎁
           </Button>
         </div>
 

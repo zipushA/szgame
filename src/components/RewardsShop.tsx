@@ -35,39 +35,59 @@ export default function RewardsShop() {
   const [fullName, setFullName] = useState("")
   const [className, setClassName] = useState("")
   const [completedOrder, setCompletedOrder] = useState<any>(null)
+  const [isAlreadyChosenOpen, setIsAlreadyChosenOpen] = useState(false);
+  const [alreadyChosenMessage, setAlreadyChosenMessage] = useState("");
 
   const gifts: Gift[] = [
     {
       id: 1,
-      name: "ספר צבעוני",
-      image: "📚",
-      description: "ספר מרתק ומעניין",
+      name: "צעיף",
+      image: "🧣",
+      description: "צעיף חמים ומעוצב לימים קרים",
     },
     {
       id: 2,
-      name: "משחק קופסה",
-      image: "🎲",
-      description: "משחק משפחתי מהנה",
+      name: "כפפות",
+      image: "🧤",
+      description: "כפפות רכות ונעימות לחורף נעים",
     },
     {
       id: 3,
-      name: "אוזניות",
-      image: "🎧",
-      description: "אוזניות איכותיות",
+      name: "מטריה",
+      image: "☂️",
+      description: "מטריה צבעונית ליום גשום במיוחד",
     },
     {
       id: 4,
-      name: "תיק גב",
-      image: "🎒",
-      description: "תיק גב מעוצב ונוח",
+      name: "משחק קלפים",
+      image: "🃏",
+      description: "משחק קלפים מהנה עם חברים",
     },
     {
       id: 5,
-      name: "כדור כדורגל",
-      image: "⚽",
-      description: "כדור כדורגל מקצועי",
+      name: "ספר",
+      image: "📖",
+      description: "ספר מרתק להעביר איתו את הזמן בכיף",
     },
-  ]
+    {
+      id: 6,
+      name: "מארז מתוק",
+      image: "🍬",
+      description: "מארז ממתקים צבעוני ומתוק במיוחד",
+    },
+    {
+      id: 7,
+      name: "פטור משיעורי בית",
+      image: "📝",
+      description: "שובר לפטור חד-פעמי משיעורי בית",
+    },
+    {
+      id: 8,
+      name: "ארוחת בוקר מפנקת",
+      image: "🥐",
+      description: "ארוחת בוקר טעימה ומיוחדת להתחיל איתה את היום",
+    },
+  ];
 
   const addToCart = (gift: Gift) => {
     if (cart.length > 0) {
@@ -118,12 +138,12 @@ export default function RewardsShop() {
       return
     }
 
-   const order = {
-  "שם מלא": fullName,
-  "כיתה": className,
-  "מתנה": cart[0].name,
-  "תאריך": new Date().toLocaleString("he-IL"),
-}
+    const order = {
+      "שם מלא": fullName,
+      "כיתה": className,
+      "מתנה": cart[0].name,
+      "תאריך": new Date().toLocaleString("he-IL"),
+    }
 
 
     setIsLoadingSubmit(true)
@@ -139,7 +159,6 @@ export default function RewardsShop() {
         body: JSON.stringify(order),
         mode: "no-cors", // נדרש בגלל CORS של Google
       })
-
       console.log("[v0] ההזמנה נשלחה בהצלחה")
 
       setCompletedOrder(order)
@@ -178,19 +197,21 @@ export default function RewardsShop() {
         <div className="flex-1">
           {/* Header */}
           <div className="text-center mb-8 sm:mb-12 animate-fade-in">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-2 sm:mb-4 font-rubik">
-              <span className="inline-block animate-bounce-letter delay-0">ח</span>
-              <span className="inline-block animate-bounce-letter delay-100">נ</span>
-              <span className="inline-block animate-bounce-letter delay-200">ו</span>
-              <span className="inline-block animate-bounce-letter delay-300">ת</span>
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl text-white font-semibold mb-4 animate-title-wave tracking-wider font-heebo">
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ח</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">נ</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ו</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ת</span>
               <span className="inline-block mx-2 sm:mx-3 animate-pulse text-gold">✦</span>
-              <span className="inline-block animate-bounce-letter delay-400">ה</span>
-              <span className="inline-block animate-bounce-letter delay-500">פ</span>
-              <span className="inline-block animate-bounce-letter delay-600">ר</span>
-              <span className="inline-block animate-bounce-letter delay-700">ס</span>
-              <span className="inline-block animate-bounce-letter delay-800">י</span>
-              <span className="inline-block animate-bounce-letter delay-900">ם</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ה</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">צ</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ו</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">פ</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ר</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">י</span>
+              <span className="inline-block text-2xl sm:text-4xl md:text-5xl text-white animate-fade-in-up mx-1">ם</span>
             </h1>
+
             <p className="text-xl sm:text-2xl text-gold font-bold mb-2">של {userName}</p>
             <div className="h-1 sm:h-2 w-48 sm:w-64 mx-auto bg-gradient-to-r from-crimson via-gold to-teal animate-shimmer" />
             <p className="text-base sm:text-xl text-teal font-semibold mt-4 sm:mt-6 font-heebo">בחרו את המתנות שלכם</p>
@@ -473,32 +494,40 @@ export default function RewardsShop() {
                   <span className="text-white/70 font-heebo">כיתה:</span>
                   <span className="text-white font-bold text-lg">{completedOrder.כיתה}</span>
                 </div>
-
                 <div className="pt-2">
                   <p className="text-white/70 text-sm mb-3 font-heebo">המתנה שלך:</p>
                   <div className="flex items-center gap-4 bg-white/10 rounded-xl p-4 border border-gold/30">
                     <span className="text-5xl">
-                      {cart[0]?.image || completedOrder.מתנה === "ספר צבעוני"
-                        ? "📚"
-                        : completedOrder.מתנה === "משחק קופסה"
-                          ? "🎲"
-                          : completedOrder.מתנה === "אוזניות"
-                            ? "🎧"
-                            : completedOrder.מתנה === "תיק גב"
-                              ? "🎒"
-                              : "⚽"}
+                      {cart[0]?.image ||
+                        completedOrder.מתנה === "צעיף"
+                        ? "🧣"
+                        : completedOrder.מתנה === "כפפות"
+                          ? "🧤"
+                          : completedOrder.מתנה === "מטריה"
+                            ? "☂️"
+                            : completedOrder.מתנה === "משחק קלפים"
+                              ? "🃏"
+                              : completedOrder.מתנה === "ספר"
+                                ? "📖"
+                                : completedOrder.מתנה === "מארז מתוק"
+                                  ? "🍬"
+                                  : completedOrder.מתנה === "פטור משיעורי בית"
+                                    ? "📝"
+                                    : completedOrder.מתנה === "ארוחת בוקר מפנקת"
+                                      ? "🥐"
+                                      : "🎁"}
                     </span>
                     <div>
-                      <p className="text-white font-bold text-xl font-rubik">{completedOrder.מתנה}</p>
+                      <p className="text-white font-bold text-xl font-rubik">
+                        {completedOrder.מתנה}
+                      </p>
                     </div>
                   </div>
                 </div>
-
                 <div className="pt-3 text-center">
                   <p className="text-white/60 text-sm font-heebo">{completedOrder.תאריך}</p>
                 </div>
               </div>
-
               <Button
                 onClick={closeSuccessModal}
                 className="w-full h-14 bg-gradient-to-r from-gold to-gold/90 hover:from-gold/90 hover:to-gold text-charcoal font-black text-lg border-2 border-teal/50 shadow-xl hover:shadow-teal/50 transition-all duration-300 hover:scale-105"
